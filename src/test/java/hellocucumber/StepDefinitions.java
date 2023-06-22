@@ -1,5 +1,6 @@
 package hellocucumber;
 
+import hellocucumber.driver.Driver;
 import io.cucumber.java.After;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
@@ -26,7 +27,11 @@ public class StepDefinitions {
     private String today;
     private String actualAnswer;
 
-    private final WebDriver driver = new FirefoxDriver();
+    private final Driver driver;
+
+    public StepDefinitions(Driver driver) {
+        this.driver = driver;
+    }
 
     @Given("today is {string}")
     public void today_is(String today) {
@@ -35,15 +40,15 @@ public class StepDefinitions {
 
     @Given("I am on the Google search page")
     public void i_am_on_the_google_search_page() {
-        driver.get("https://www.google.com");
+        driver.getDriver().get("https://www.google.com");
         // Google's cookie consent page appears and needs accepting
-        WebElement element = driver.findElement(By.id("L2AGLb"));
+        WebElement element = driver.getDriver().findElement(By.id("L2AGLb"));
         element.click();
     }
 
     @When("I search for {string}")
     public void i_search_for(String query) {
-        WebElement element = driver.findElement(By.name("q"));
+        WebElement element = driver.getDriver().findElement(By.name("q"));
         //Enter something to search for
         element.sendKeys(query);
         //Now submit the form. Webdriver will find the form for us from the element
@@ -64,24 +69,10 @@ public class StepDefinitions {
     public void the_page_title_should_start_with(String titleStartsWith) {
         // Google's search is rendered dynamically with Javascript
         // Wait for the page to load timeout after 10 seconds
-        new WebDriverWait(driver, Duration.of(10L, ChronoUnit.SECONDS)).until(new ExpectedCondition<Boolean>() {
+        new WebDriverWait(driver.getDriver(), Duration.of(10L, ChronoUnit.SECONDS)).until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver d) {
                 return d.getTitle().toLowerCase().startsWith(titleStartsWith);
             }
         });
     }
-
-    @After()
-    public void closeBrowser() {
-        driver.quit();
-    }
-
-    @After()
-    public void takeScreenshotIfScenarioFails(Scenario scenario) {
-        if (scenario.isFailed()) {
-            byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            scenario.attach(screenshot, "image/png", "name");
-        }
-    }
-
 }
