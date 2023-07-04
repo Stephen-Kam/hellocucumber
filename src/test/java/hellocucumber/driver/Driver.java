@@ -36,7 +36,7 @@ public class Driver {
                 driver = new FirefoxDriver(firefoxOptions);
                 break;
             case "chrome":
-                driver =  new ChromeDriver(chromeOptions);
+                driver = new ChromeDriver(chromeOptions);
                 break;
             default:
                 LOG.warn("Invalid browser selection, defaulting to Firefox");
@@ -45,5 +45,4 @@ public class Driver {
         }
         this.driver = driver;
     }
-
 }

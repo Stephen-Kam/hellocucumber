@@ -1,13 +1,14 @@
 package hellocucumber;
 
 import hellocucumber.driver.Driver;
-import io.cucumber.java.After;
-import io.cucumber.java.Scenario;
+import hellocucumber.pages.ClaimantSearchPage;
+import hellocucumber.pages.SendInvitationPage;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.openqa.selenium.*;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -17,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class IsItFriday {
+
     static String isItFriday(String today) {
         return "Friday".equals(today) ? "TGIF" : "Nope";
     }
@@ -29,8 +31,15 @@ public class StepDefinitions {
 
     private final Driver driver;
 
-    public StepDefinitions(Driver driver) {
+    private final ClaimantSearchPage claimantSearchPage;
+    private final SendInvitationPage sendInvitationPage;
+
+    public StepDefinitions(Driver driver,
+                           ClaimantSearchPage claimantSearchPage,
+                           SendInvitationPage sendInvitationPage) {
         this.driver = driver;
+        this.claimantSearchPage = claimantSearchPage;
+        this.sendInvitationPage = sendInvitationPage;
     }
 
     @Given("today is {string}")
@@ -44,6 +53,18 @@ public class StepDefinitions {
         // Google's cookie consent page appears and needs accepting
         WebElement element = driver.getDriver().findElement(By.id("L2AGLb"));
         element.click();
+    }
+
+    @Given("A user is on the claimant submission screen")
+    public void a_user_is_on_the_claimant_submission_screen() {
+        claimantSearchPage.navigateTo(claimantSearchPage.url);
+        claimantSearchPage.on(claimantSearchPage.heading, claimantSearchPage.url);
+    }
+
+    @When("A nino is provided")
+    public void a_nino_is_provided() {
+        claimantSearchPage.searchClaimant("AA123456D");
+        claimantSearchPage.submit();
     }
 
     @When("I search for {string}")
@@ -74,5 +95,10 @@ public class StepDefinitions {
                 return d.getTitle().toLowerCase().startsWith(titleStartsWith);
             }
         });
+    }
+
+    @Then("They will be on the next page")
+    public void they_will_be_on_the_next_page() {
+        sendInvitationPage.on(sendInvitationPage.header, sendInvitationPage.url);
     }
 }
