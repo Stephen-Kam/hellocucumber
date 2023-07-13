@@ -1,0 +1,7 @@
+url: ${URL:-http://localhost:3000}
+seleniumHubUrl: ${SELENIUM_HUB_URL:-http://selenium-hub:4444}
+browser: ${BROWSER:-firefox}
+remote: ${REMOTE:-false}
+headless: ${HEADLESS:-false}
+fileDownloadPath: ${user.dir}/src/test/resources/downloads/
+waitTime: ${WAIT_TIME:-30}

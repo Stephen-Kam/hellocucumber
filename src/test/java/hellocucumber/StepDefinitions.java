@@ -15,22 +15,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-class IsItFriday {
-
-    static String isItFriday(String today) {
-        return "Friday".equals(today) ? "TGIF" : "Nope";
-    }
-}
-
 public class StepDefinitions {
-
-    private String today;
-    private String actualAnswer;
-
     private final Driver driver;
-
     private final ClaimantSearchPage claimantSearchPage;
     private final SendInvitationPage sendInvitationPage;
 
@@ -40,11 +26,6 @@ public class StepDefinitions {
         this.driver = driver;
         this.claimantSearchPage = claimantSearchPage;
         this.sendInvitationPage = sendInvitationPage;
-    }
-
-    @Given("today is {string}")
-    public void today_is(String today) {
-        this.today = today;
     }
 
     @Given("I am on the Google search page")
@@ -74,16 +55,6 @@ public class StepDefinitions {
         element.sendKeys(query);
         //Now submit the form. Webdriver will find the form for us from the element
         element.submit();
-    }
-
-    @When("I ask whether it's Friday yet")
-    public void i_ask_whether_it_s_friday_yet() {
-        actualAnswer = IsItFriday.isItFriday(today);
-    }
-
-    @Then("I should be told {string}")
-    public void i_should_be_told(String expectedAnswer) {
-        assertEquals(expectedAnswer, actualAnswer);
     }
 
     @Then("the page title should start with {string}")

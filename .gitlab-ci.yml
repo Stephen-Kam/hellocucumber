@@ -1,0 +1,44 @@
+variables:
+  #Product
+  PRODUCT: pip-apply
+  # Config
+  BUILD_TYPE: MAVEN
+  MAVEN_IMAGE: "maven:3-openjdk-17"
+  MVN_OPTS: "-DLOG_LEVEL=INFO"
+  MVN_CLI_OPTS: "--batch-mode"
+  RUNNER_TYPE: "saas"
+
+stages:
+  - update-version
+  - code-quality
+  - application-build
+  - code-analysis
+  - site-report
+  - image-build
+  - container-image-test
+  - image-push
+  - update-project-metadata
+  - generate-api-docs
+  - pages
+  - create-schedules
+
+include:
+  - local: "/gitlab-ci/includes.yml"
+
+required-fragment-check:
+  variables:
+    RULESET: MAVEN_CI_QA
+
+create-develop-nightly-schedule:
+  extends: .add-schedule
+  variables:
+    SCHEDULE_NAME: Nightly-Develop-CI-Build
+    SCHEDULE_BRANCH: develop
+    SCHEDULE_CRON: "0 20 * * *"
+    RANDOMIZE_MINS: "true"
+
+docker-build:
+  before_script:
+    - cp ${MVN_SETTINGS_FILE_SAAS} settings.xml
+  variables:
+    DOCKER_CLI_ARGS: "--build-arg MVN_SETTINGS_FILE_SAAS=settings.xml"
